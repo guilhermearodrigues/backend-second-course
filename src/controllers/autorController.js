@@ -38,8 +38,13 @@ class AutorController {
         try {
             const id = req.params.id;
             const dados = req.body;
-            await autor.findByIdAndUpdate(id, dados);
-            res.status(200).json({message: "Autor atualizado"});
+            const atualizaAutor = await autor.findByIdAndUpdate(id, dados);
+            if (atualizaAutor != null) {
+                res.status(200).json({message: "Autor atualizado"});
+            } else {
+                next(new Erro404(`O ID ${id} não foi encontrado.`));
+            }
+            
         } catch (e) {
             next(e);
         }   
@@ -48,8 +53,12 @@ class AutorController {
     static async deletarAutor (req, res, next) {
         try {
             const id = req.params.id;
-            await autor.findByIdAndDelete(id);
-            res.status(200).json({message: "Autor deletado"});
+            const deletaAutor = await autor.findByIdAndDelete(id);
+            if (deletaAutor != null) {
+                res.status(200).json({message: "Autor deletado"});
+            } else {
+                next(new Erro404(`O ID ${id} não foi encontrado.`));
+            }
         } catch (e) {
             next(e);
         } 
