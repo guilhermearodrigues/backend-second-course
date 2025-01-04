@@ -1,3 +1,4 @@
+import Erro404 from "../erros/Erro404.js";
 import {autor} from "../models/Autor.js";
 
 class AutorController {
@@ -17,7 +18,7 @@ class AutorController {
             if (autorEncontrado !== null) {
                 res.status(200).json(autorEncontrado);
             } else {
-                res.status(404).send({message: `autor não encontrado`});
+                next(new Erro404("ID do autor não encontrado."));
             }
         } catch (e){
             next(e);

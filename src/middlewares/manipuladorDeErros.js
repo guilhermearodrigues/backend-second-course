@@ -1,13 +1,20 @@
 /* eslint-disable no-unused-vars */
 import mongoose from "mongoose";
+import ErroBase from "../erros/ErroBase.js";
+import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
+import ErroValidacao from "../erros/ErroValidacao.js";
+import Erro404 from "../erros/Erro404.js";
 
 function manipuladorDeErros (e, req, res, next) {
         if (e instanceof mongoose.Error.CastError) {
-            res.status(400).send({message: `Erro na requisição`});
+            new RequisicaoIncorreta().enviarResposta(res);
         } else if (e instanceof mongoose.Error.ValidationError) {
-            res.status(400).send({message: `Erro de validação de dados`});
+            new ErroValidacao(e).enviarResposta(res);
+        } else if (e instanceof Erro404) {
+            e.enviarResposta(res);
         } else {
-            res.status(500).send({message: `Erro interno de servidor`});
+            console.log(e instanceof Erro404);
+            new ErroBase().enviarResposta(res);
         }
 }
 
