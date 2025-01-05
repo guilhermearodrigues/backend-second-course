@@ -1,5 +1,6 @@
 import livro from "../models/Livro.js";
-import {autor} from "../models/Autor.js"
+import {autor} from "../models/Autor.js";
+import Erro404 from "../erros/Erro404.js";
 
 class LivroController {
     static async listarLivros (req, res, next) {
@@ -15,7 +16,11 @@ class LivroController {
         try {
             const id = req.params.id;
             const livroEncontrado = await livro.findById(id);
-            res.status(200).json(livroEncontrado);
+            if (livroEncontrado !== null) {
+                res.status(200).json(livroEncontrado);
+            } else {
+                next(new Erro404(`O ID ${id} não foi encontrado.`));
+            }
         } catch (e) {
             next(e);
         }    
@@ -40,8 +45,12 @@ class LivroController {
         try {
             const id = req.params.id;
             const dados = req.body;
-            await livro.findByIdAndUpdate(id, dados);
-            res.status(200).json({message: "Livro atualizado"});
+            const livroEncontrado = await livro.findByIdAndUpdate(id, dados);
+            if (livroEncontrado !== null) {
+                res.status(200).json({message: "Livro atualizado"});
+            } else {
+                next(new Erro404(`O ID ${id} não foi encontrado.`));
+            }  
         } catch (e) {
             next(e);
         }   
@@ -50,8 +59,13 @@ class LivroController {
     static async deletarLivro (req, res, next) {
         try {
             const id = req.params.id;
-            await livro.findByIdAndDelete(id);
-            res.status(200).json({message: "Livro deletado"});
+            const livroDeletado = await livro.findByIdAndDelete(id);
+            if (livroDeletado !== null) {
+                res.status(200).json({message: "Livro deletado"});
+            } else {
+                next(new Erro404(`O ID ${id} não foi encontrado.`));
+            }
+            
         } catch (e) {
             next(e);
         } 
@@ -61,7 +75,11 @@ class LivroController {
         const editora = req.query.editora;
         try {
             const livrosPorEditora = await livro.find({editora: editora});
-            res.status(200).json(livrosPorEditora);
+            if (livrosPorEditora !== null) {
+                res.status(200).json(livrosPorEditora);
+            } else {
+                next(new Erro404(`O ID ${id} não foi encontrado.`));
+            }
         } catch (e) {
             next(e);
         };
