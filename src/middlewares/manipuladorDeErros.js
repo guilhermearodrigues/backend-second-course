@@ -13,7 +13,6 @@ function manipuladorDeErros (e, req, res, next) {
         } else if (e instanceof Erro404) {
             e.enviarResposta(res);
         } else {
-            console.log(e instanceof Erro404);
             new ErroBase().enviarResposta(res);
         }
 }

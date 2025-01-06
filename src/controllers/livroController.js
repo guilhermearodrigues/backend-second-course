@@ -1,5 +1,5 @@
-import livro from "../models/Livro.js";
-import {autor} from "../models/Autor.js";
+import {livro} from "../models/index.js";
+import {autor} from "../models/index.js";
 import Erro404 from "../erros/Erro404.js";
 
 class LivroController {
@@ -71,20 +71,53 @@ class LivroController {
         } 
     }
 
-    static async listarLivrosPorEditora (req, res, next) {
-        const editora = req.query.editora;
+    static async listarLivrosPorFiltro (req, res, next) {
+        
         try {
-            const livrosPorEditora = await livro.find({editora: editora});
-            if (livrosPorEditora !== null) {
-                res.status(200).json(livrosPorEditora);
+            
+            const busca = await processaBusca(req.query);
+
+            if (busca!==null) {
+                const livrosFiltrados = await livro
+            .find(busca)
+            .populate("autor");
+            if (livrosFiltrados !== null) {
+                res.status(200).json(livrosFiltrados);
             } else {
-                next(new Erro404(`O ID ${id} não foi encontrado.`));
+                res.status(200).send([]);
             }
+            }
+            
         } catch (e) {
             next(e);
         };
     }
 
 };
+
+async function processaBusca(parametros) {
+        const {editora, titulo, minPaginas, maxPaginas, nomeAutor} = parametros;
+
+        let busca = {
+
+        };
+
+        if (minPaginas || maxPaginas) busca.paginas = {};
+
+        if (editora) busca.editora = {$regex: editora, $options: "i"};
+        if (titulo) busca.titulo = {$regex: titulo, $options: "i"};
+        if (minPaginas) busca.paginas.$gte = minPaginas;
+        if (maxPaginas) busca.paginas.$lte = maxPaginas;
+        if (nomeAutor) {
+            const autorEncontrado = await autor.findOne({nome: nomeAutor});
+            if (autorEncontrado !== null) {
+                busca.autor = autorEncontrado._id;
+            } else {
+                busca = null;
+            }
+        };
+
+        return busca;
+}
 
 export default LivroController

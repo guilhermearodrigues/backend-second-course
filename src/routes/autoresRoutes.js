@@ -10,3 +10,8 @@ routes.put("/autores/:id", AutorController.atualizarAutor); // altera dados de u
 routes.delete("/autores/:id", AutorController.deletarAutor); // deleta um autor
 
 export default routes;
+
+
+
+
+
