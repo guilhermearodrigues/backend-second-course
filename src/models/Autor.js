@@ -9,6 +9,7 @@ const autorSchema = new mongoose.Schema({
     },
     nacionalidade: {
         type: String,
+        required: true
     }
 }, {versionKey: false}
 );

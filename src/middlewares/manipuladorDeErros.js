@@ -10,7 +10,7 @@ function manipuladorDeErros (e, req, res, next) {
             new RequisicaoIncorreta().enviarResposta(res);
         } else if (e instanceof mongoose.Error.ValidationError) {
             new ErroValidacao(e).enviarResposta(res);
-        } else if (e instanceof Erro404) {
+        } else if (e instanceof ErroBase) {
             e.enviarResposta(res);
         } else {
             new ErroBase().enviarResposta(res);
